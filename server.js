@@ -33,7 +33,8 @@ app.get("/", (req, res) => {
 
 app.post("/signIn", (req, res) => {
   if (req.body.email === DATABASE.users[0].email && req.body.password === DATABASE.users[0].password) {
-    res.json('Success!!')
+    //res.json('Success!!')
+    res.json(DATABASE.users[0]);
   } else {
     res.status(400).json('Error logging in..')
   }
@@ -73,7 +74,8 @@ app.get('/profile/:id', (req, res) => {
   }
 })
 
-app.post('/image', (req, res) => {
+// to update we use put rquest
+app.put('/image', (req, res) => {
   const { ID } = req.body;
   let found = false;
   DATABASE.users.forEach(user => {
