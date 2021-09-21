@@ -2,18 +2,17 @@ const express = require('express');
 var cors = require('cors')
 
 
-const knex = require('knex')({
+const db = require('knex')({
   client: 'pg',
   connection: {
     host: '127.0.0.1',
     port: 5432,
-    user: 'SID',
-    password: '',
-    database: 'smartbrain'
+    user: 'postgres',
+    password: 'liberal',
+    database: 'smart-brain'
   }
 });
-console.log(knex.select("*").from('users'));
-knex.select("*").from('users');
+
 
 const app = express();
 app.use(express.json());
@@ -56,14 +55,20 @@ app.post("/signIn", (req, res) => {
 
 app.post('/register', (req, res) => {
   const { email, password, name } = req.body
-  DATABASE.users.push({
-    id: '3',
-    name: name,
+  // DATABASE.users.push({
+  //   id: '3',
+  //   name: name,
+  //   email: email,
+  //   password: password,
+  //   entries: 0,
+  //   joined: new Date()
+  // })
+  db('users').insert({
     email: email,
-    password: password,
-    entries: 0,
+    name: name,
     joined: new Date()
   })
+    .then(console.log)
   res.json(DATABASE.users[DATABASE.users.length - 1])
 
 })
@@ -107,6 +112,7 @@ app.put('/image', (req, res) => {
 
 })
 
-app.listen(4000, () => {
-  console.log('app is running on 4000');
+app.listen(3000, () => {
+  console.log('app is running on 3000');
 })
+
