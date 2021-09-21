@@ -1,6 +1,18 @@
 const express = require('express');
 var cors = require('cors')
 
+
+const knex = require('knex')({
+  client: 'pg',
+  connection: {
+    host: '127.0.0.1',
+    port: 5432,
+    user: 'SID',
+    password: '',
+    database: 'smartbrain'
+  }
+});
+
 const app = express();
 app.use(express.json());
 app.use(cors())
