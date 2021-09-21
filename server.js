@@ -12,6 +12,8 @@ const knex = require('knex')({
     database: 'smartbrain'
   }
 });
+console.log(knex.select("*").from('users'));
+knex.select("*").from('users');
 
 const app = express();
 app.use(express.json());
