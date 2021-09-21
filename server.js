@@ -111,20 +111,27 @@ app.get('/profile/:id', (req, res) => {
 
 // to update we use put rquest
 app.put('/image', (req, res) => {
-  const { ID } = req.body;
-  let found = false;
-  DATABASE.users.forEach(user => {
-    if (user.id === ID) {
-      //If user input matches with its values in DATABASE,send that user
-      found = true;
-      user.entries++
-      return res.json(user.entries)
-    }
-  })
-  // and if it mismatches
-  if (!found) {
-    res.status(400).json('not found')
-  }
+  const { id } = req.body;
+  // let found = false;
+  // DATABASE.users.forEach(user => {
+  //   if (user.id === ID) {
+  //     //If user input matches with its values in DATABASE,send that user
+  //     found = true;
+  //     user.entries++
+  //     return res.json(user.entries)
+  //   }
+  // })
+  // // and if it mismatches
+  // if (!found) {
+  //   res.status(400).json('not found')
+  // }
+  db('users').where('id', '=', id)
+    .increment('entries', 1)
+    .returning('entries')
+    .then(entries => {
+      res.json(entries[0])
+    })
+    .catch(err => res.status(400).json('Unable to get entries'))
 
 })
 
