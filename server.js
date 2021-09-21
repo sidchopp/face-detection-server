@@ -82,19 +82,31 @@ app.get('/profile/:id', (req, res) => {
   //req.params is the the "part of request" we send in the request URL parameter
 
   const { id } = req.params;
-  let found = false;
-  DATABASE.users.forEach(user => {
-    //LHS id refers to what a user fills on UI and RHS id is from DATABASE
-    if (user.id === id) {
-      //If user input matches with its values in DATABASE,send that user
-      found = true;
-      return res.json(user)
-    }
-  })
-  // and if it mismatches
-  if (!found) {
-    res.status(400).json('not found')
-  }
+
+  // DATABASE.users.forEach(user => {
+  //   //LHS id refers to what a user fills on UI and RHS id is from DATABASE
+  //   if (user.id === id) {
+  //     //If user input matches with its values in DATABASE,send that user
+  //     found = true;
+  //     return res.json(user)
+  //   }
+  // })
+
+  db.select('*')
+    .from('users')
+    .where({
+      id: id
+    })
+    .then(user => {
+      if (user.length) {
+
+        res.json(user[0])
+      } else {
+        res.status(400).json('Not Found!!')
+      }
+    })
+    // and if it mismatches
+    .catch(err => res.status(400).json('Error getting User'))
 })
 
 // to update we use put rquest
