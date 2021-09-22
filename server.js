@@ -46,10 +46,10 @@ app.get("/", (req, res) => {
 })
 
 app.post("/signIn", (req, res) => {
-  bcrypt.compare("trees", "$2a$10$Qyb3Pg2yqPWZs4Nm1nsZT.cZXP3AUA5R2jthUHVEgPSRu9SHOoaDi", function (err, res) {
-    console.log(res);
-    // res === true
-  });
+  // bcrypt.compare("trees", "$2a$10$Qyb3Pg2yqPWZs4Nm1nsZT.cZXP3AUA5R2jthUHVEgPSRu9SHOoaDi", function (err, res) {
+  //   console.log(res);
+  //   // res === true
+  // });
   if (req.body.email === DATABASE.users[0].email && req.body.password === DATABASE.users[0].password) {
     //res.json('Success!!')
     res.json(DATABASE.users[0]);
@@ -62,29 +62,41 @@ app.post('/register', (req, res) => {
   const { email, password, name } = req.body
 
 
-  bcrypt.genSalt(10, function (err, salt) {
-    bcrypt.hash(password, salt, function (err, hash) {
-      console.log(hash);
-    });
-  });
-  // DATABASE.users.push({
-  //   id: '3',
-  //   name: name,
-  //   email: email,
-  //   password: password,
-  //   entries: 0,
-  //   joined: new Date()
-  // })
-  db('users')
-    .returning('*')
-    .insert({
-      email: email,
-      name: name,
-      joined: new Date()
+  var bcrypt = require('bcryptjs');
+  var salt = bcrypt.genSaltSync(10);
+  var hash = bcrypt.hashSync(password, salt);
+
+  db.transaction(trx => {
+    trx.insert({
+      // RHS hash is the const from above
+      hash: hash,
+      // RHS email is from req.body above
+      email: email
     })
-    .then(user => {
-      res.json(user[0])
-    })
+      .into('login')
+      .returning('email')
+      .then(loginEmail => {
+        return trx('users')
+          .returning('*')
+          .insert({
+            email: loginEmail,
+            name: name,
+            joined: new Date()
+          })
+          .then(user => {
+            res.json(user[0])
+          })
+      })
+  })
+    // DATABASE.users.push({
+    //   id: '3',
+    //   name: name,
+    //   email: email,
+    //   password: password,
+    //   entries: 0,
+    //   joined: new Date()
+    // })
+
     //  .catch(err => res.status(400).json(err))
     .catch(err => res.status(400).json("Unable to register"))
 })
