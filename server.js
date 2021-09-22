@@ -48,14 +48,32 @@ app.get("/", (req, res) => {
 app.post("/signIn", (req, res) => {
   // bcrypt.compare("trees", "$2a$10$Qyb3Pg2yqPWZs4Nm1nsZT.cZXP3AUA5R2jthUHVEgPSRu9SHOoaDi", function (err, res) {
   //   console.log(res);
-  //   // res === true
+
   // });
-  if (req.body.email === DATABASE.users[0].email && req.body.password === DATABASE.users[0].password) {
-    //res.json('Success!!')
-    res.json(DATABASE.users[0]);
-  } else {
-    res.status(400).json('Error logging in..')
-  }
+  // if (req.body.email === DATABASE.users[0].email && req.body.password === DATABASE.users[0].password) {
+  //   //res.json('Success!!')
+  //   res.json(DATABASE.users[0]);
+  // } else {
+  //   res.status(400).json('Error logging in..')
+  // }
+
+  db.select('email', 'hash').from('login')
+    .where('email', '=', req.body.email)
+    .then(data => {
+      const isValid = bcrypt.compareSync(req.body.password, data[0].hash);
+      if (isValid) {
+        return db.select("*").from('users')
+          .where('email', '=', req.body.email)
+          .then(user => {
+            res.json(user[0])
+          })
+          .catch(err => res.status(400).json('Unable to get User!'))
+      }
+      else {
+        res.status(400).json('Wrong Credentials')
+      }
+    })
+    .catch(err => res.status(400).json('Wrong Credentials!'))
 })
 
 app.post('/register', (req, res) => {
