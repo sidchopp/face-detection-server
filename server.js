@@ -1,4 +1,5 @@
 const express = require('express');
+var bcrypt = require('bcryptjs');
 var cors = require('cors')
 
 
@@ -45,6 +46,10 @@ app.get("/", (req, res) => {
 })
 
 app.post("/signIn", (req, res) => {
+  bcrypt.compare("trees", "$2a$10$Qyb3Pg2yqPWZs4Nm1nsZT.cZXP3AUA5R2jthUHVEgPSRu9SHOoaDi", function (err, res) {
+    console.log(res);
+    // res === true
+  });
   if (req.body.email === DATABASE.users[0].email && req.body.password === DATABASE.users[0].password) {
     //res.json('Success!!')
     res.json(DATABASE.users[0]);
@@ -55,6 +60,13 @@ app.post("/signIn", (req, res) => {
 
 app.post('/register', (req, res) => {
   const { email, password, name } = req.body
+
+
+  bcrypt.genSalt(10, function (err, salt) {
+    bcrypt.hash(password, salt, function (err, hash) {
+      console.log(hash);
+    });
+  });
   // DATABASE.users.push({
   //   id: '3',
   //   name: name,
