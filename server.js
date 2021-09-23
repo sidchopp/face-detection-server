@@ -1,9 +1,12 @@
 const express = require('express');
 var bcrypt = require('bcryptjs');
 var cors = require('cors');
-const register = require('./controllers/register');
+
 
 //components
+const register = require('./controllers/register');
+const signIn = require('./controllers/signIn');
+
 
 const db = require('knex')({
   client: 'pg',
@@ -27,29 +30,7 @@ app.get("/", (req, res) => {
 
 })
 
-app.post("/signIn", (req, res) => {
-  const { email, password } = req.body
-  if (!email || !password) {
-    return res.status(400).json('Please fill your email and password first.')
-  }
-  db.select('email', 'hash').from('login')
-    .where('email', '=', req.body.email)
-    .then(data => {
-      const isValid = bcrypt.compareSync(req.body.password, data[0].hash);
-      if (isValid) {
-        return db.select("*").from('users')
-          .where('email', '=', req.body.email)
-          .then(user => {
-            res.json(user[0])
-          })
-          .catch(err => res.status(400).json('Unable to get User!'))
-      }
-      else {
-        res.status(400).json('Wrong Credentials')
-      }
-    })
-    .catch(err => res.status(400).json('Wrong Credentials!😞 '))
-})
+app.post("/signIn", (req, res) => { signIn.handleSignIn(req, res, db, bcrypt) })
 
 app.post('/register', (req, res) => { register.handleRegister(req, res, db, bcrypt) })
 
