@@ -57,6 +57,10 @@ app.post("/signIn", (req, res) => {
   // } else {
   //   res.status(400).json('Error logging in..')
   // }
+  const { email, password } = req.body
+  if (!email || !password) {
+    return res.status(400).json('Please fill your email and password first.')
+  }
 
   db.select('email', 'hash').from('login')
     .where('email', '=', req.body.email)
@@ -74,14 +78,14 @@ app.post("/signIn", (req, res) => {
         res.status(400).json('Wrong Credentials')
       }
     })
-    .catch(err => res.status(400).json('Wrong Credentials!'))
+    .catch(err => res.status(400).json('Wrong Credentials!😞 '))
 })
 
 app.post('/register', (req, res) => {
   const { email, password, name } = req.body
 
   if (!email || !name || !password) {
-    return response.status(400).json('incorrect submission')
+    return res.status(400).json('In order to register,please fill all the three fields!')
   }
 
   const bcrypt = require('bcryptjs');
