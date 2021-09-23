@@ -6,6 +6,7 @@ var cors = require('cors');
 //components
 const register = require('./controllers/register');
 const signIn = require('./controllers/signIn');
+const profile = require('./controllers/profile');
 
 
 const db = require('knex')({
@@ -34,26 +35,7 @@ app.post("/signIn", (req, res) => { signIn.handleSignIn(req, res, db, bcrypt) })
 
 app.post('/register', (req, res) => { register.handleRegister(req, res, db, bcrypt) })
 
-app.get('/profile/:id', (req, res) => {
-
-  //req.params is the the "part of request" we send in the request URL parameter
-
-  const { id } = req.params;
-  db.select('*')
-    .from('users')
-    .where({
-      id: id
-    })
-    .then(user => {
-      if (user.length) {
-        res.json(user[0])
-      } else {
-        res.status(400).json('Not Found!!')
-      }
-    })
-    // and if it mismatches
-    .catch(err => res.status(400).json('Error getting User'))
-})
+app.get('/profile/:id', (req, res) => { profile.handleProfileGet(req, res, db, bcrypt) })
 
 // to update we use put rquest
 app.put('/image', (req, res) => {
