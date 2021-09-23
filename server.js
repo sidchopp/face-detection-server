@@ -7,7 +7,7 @@ const db = require('knex')({
   client: 'pg',
   connection: {
     host: '127.0.0.1',
-    port: 5432,
+    // port: 5432,
     user: 'postgres',
     password: 'liberal',
     database: 'smart-brain'
@@ -19,29 +19,30 @@ const app = express();
 app.use(express.json());
 app.use(cors())
 
-const DATABASE = {
-  users: [
-    {
-      id: '1',
-      name: 'Sid',
-      email: 'sid@gmail.com',
-      password: 'hurray',
-      entries: 0,
-      joined: new Date()
-    },
-    {
-      id: '2',
-      name: 'Sally',
-      email: 'sally@gmail.com',
-      password: 'yahoo',
-      entries: 0,
-      joined: new Date()
-    },
-  ]
-}
+// const DATABASE = {
+//   users: [
+//     {
+//       id: '1',
+//       name: 'Sid',
+//       email: 'sid@gmail.com',
+//       password: 'hurray',
+//       entries: 0,
+//       joined: new Date()
+//     },
+//     {
+//       id: '2',
+//       name: 'Sally',
+//       email: 'sally@gmail.com',
+//       password: 'yahoo',
+//       entries: 0,
+//       joined: new Date()
+//     },
+//   ]
+// }
 
 app.get("/", (req, res) => {
-  res.send(DATABASE.users)
+  // res.send(DATABASE.users)
+  res.send(db.users)
 
 })
 
@@ -79,10 +80,13 @@ app.post("/signIn", (req, res) => {
 app.post('/register', (req, res) => {
   const { email, password, name } = req.body
 
+  if (!email || !name || !password) {
+    return response.status(400).json('incorrect submission')
+  }
 
-  var bcrypt = require('bcryptjs');
-  var salt = bcrypt.genSaltSync(10);
-  var hash = bcrypt.hashSync(password, salt);
+  const bcrypt = require('bcryptjs');
+  const salt = bcrypt.genSaltSync(10);
+  const hash = bcrypt.hashSync(password, salt);
 
   // we created transaction when we do more than 2 things at ONCE, like when a new use rregister, we want to save its info in 'users' and 'login' table of our DB at ONCE and also for Correct recovery from failures
   db.transaction(trx => {
