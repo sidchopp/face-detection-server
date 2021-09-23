@@ -1,4 +1,4 @@
-const handleProfileGet = (req, res, db, bcrypt) => {
+const handleProfileGet = (req, res, db) => {
 
   //req.params is the the "part of request" we send in the request URL parameter
 

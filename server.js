@@ -7,6 +7,7 @@ var cors = require('cors');
 const register = require('./controllers/register');
 const signIn = require('./controllers/signIn');
 const profile = require('./controllers/profile');
+const image = require('./controllers/image');
 
 
 const db = require('knex')({
@@ -37,17 +38,8 @@ app.post('/register', (req, res) => { register.handleRegister(req, res, db, bcry
 
 app.get('/profile/:id', (req, res) => { profile.handleProfileGet(req, res, db, bcrypt) })
 
-// to update we use put rquest
-app.put('/image', (req, res) => {
-  const { id } = req.body;
-  db('users').where('id', '=', id)
-    .increment('entries', 1)
-    .returning('entries')
-    .then(entries => {
-      res.json(entries[0])
-    })
-    .catch(err => res.status(400).json('Unable to get entries'))
-})
+// to update we use put request
+app.put('/image', (req, res) => { image.handleImagePut(req, res, db) })
 
 app.listen(3000, () => {
   console.log('app is running on 3000');
