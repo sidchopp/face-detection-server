@@ -127,7 +127,7 @@ app.post('/register', (req, res) => {
     // })
 
     //  .catch(err => res.status(400).json(err))
-    .catch(err => res.status(400).json("Unable to register"))
+    .catch(err => res.status(400).json("Unable to register, as the Email address already exists!"))
 })
 
 app.get('/profile/:id', (req, res) => {
