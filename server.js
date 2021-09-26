@@ -13,7 +13,10 @@ const db = require('knex')({
   connection: {
     // earlier host: 127.0.0.1'
     connectionString: process.env.DATABASE_URL,
-    ssl: true,
+    // 
+    ssl: {
+      rejectUnauthorized: false
+    }
   }
 });
 
